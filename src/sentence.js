@@ -10,15 +10,15 @@ var Sentence = function() {
     };
     
     this.setVariable = function(name/*string*/, value/*Object*/) {
+        var oldValue = privateVariables[name];
         privateVariables[name] = value;
-        setTimeout(function(){
+        setTimeout(function() {
             whens
             .filter(function(w) {
                 return w.propertyName === name;
             })
             .forEach(function(w) {
-                if((typeof(w.fctToVerify) === "function" && w.fctToVerify(value)) || 
-                    w.fctToVerify === value) 
+                if(typeof(w.fctToVerify) === "function" && w.fctToVerify(value, oldValue))
                 {
                     w.do && w.do.call(null,value);
                 } else {
@@ -34,8 +34,8 @@ var Sentence = function() {
         var fctToVerify;
         var w = {
             propertyName: name,
-            fctToVerify: function(value) {
-                return fctToVerify ? fctToVerify.call(null,value) : false;
+            fctToVerify: function(newValue, oldValue) {
+                return fctToVerify ? fctToVerify.call(null,newValue,oldValue) : false;
             },
             do: undefined,
             otherwise: undefined,
@@ -82,6 +82,12 @@ var Sentence = function() {
             isUndefined: function(v) {
                 fctToVerify = function(value) {
                     return value === undefined;
+                };
+                return actions;
+            },
+            becomes: function(v) {
+                fctToVerify = function(newValue,oldValue) {
+                    return v === newValue && newValue !== oldValue;
                 };
                 return actions;
             },
