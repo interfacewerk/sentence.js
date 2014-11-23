@@ -64,13 +64,25 @@ var Sentence = function() {
             is: function(v) {
                 fctToVerify = function(value) {
                     return value === v;
-                }
+                };
                 return actions;
             },
             isNot: function(v) {
                 fctToVerify = function(value) {
                     return value !== v;
-                }
+                };
+                return actions;
+            },
+            isDefined: function() {
+                fctToVerify = function(value) {
+                    return value !== undefined;
+                };
+                return actions;
+            },
+            isUndefined: function(v) {
+                fctToVerify = function(value) {
+                    return value === undefined;
+                };
                 return actions;
             },
             remove: function() {
