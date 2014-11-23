@@ -20,5 +20,7 @@ mySentence.when("x").verifies(function(x) { return x%2===0; }).do(somethingElse)
 You can write as many ```when``` as you want with the same ```Sentence``` object. To set the value of a variable of a ```Sentence```, you simply write:
 
 ```
-mySentence.setVariable("x",value)
+mySentence.setVariable("x",value);
 ```
+
+All the ```when``` you put into ```mySentence``` will then be verified and actions executed automatically.
