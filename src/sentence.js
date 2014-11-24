@@ -79,7 +79,7 @@ var Sentence = function() {
                 };
                 return actions;
             },
-            isUndefined: function(v) {
+            isUndefined: function() {
                 fctToVerify = function(value) {
                     return value === undefined;
                 };
