@@ -1,162 +1,176 @@
+'use strict';
+
 var Sentence = function() {
-    'use strict';
     var that = this;
 
     var privateVariables = {};
 
     var whens = [];
 
-    this.getVariable = function(name) {
+    that.get = function(name) {
         return privateVariables[name];    
     };
 
-    var verifyWhen = function(w,newValue,oldValue) {
-        return typeof(w.fctToVerify) === "function" && w.fctToVerify(newValue, oldValue)
-    };
-
-    var doWhen = function(w,newValue,oldValue) {
-        w.do && w.do.call(null,newValue,oldValue);
-    };
-
-    var otherWiseWhen = function(w,newValue,oldValue) {
-        w.otherwise && w.otherwise.call(null,newValue,oldValue);
-    };
-
-    var anywayWhen = function(w,newValue,oldValue) {
-        w.anyway && w.anyway.call(null,newValue,oldValue);
-    };
-
-    this.setVariable = function(name/*string*/, value/*Object*/) {
-        var oldValue = privateVariables[name];
+    this.set = function(name, value) {
+        var oldValues = JSON.parse(JSON.stringify(privateVariables));
         privateVariables[name] = value;
         setTimeout(function() {
-            whens
-            .filter(function(w) {
-                return w.propertyName === name;
-            })
-            .forEach(function(w) {
-                w.process(value,oldValue);
-            })
+            var newValues = privateVariables;
+            whens.forEach(function(w) {
+                w.process(name, newValues, oldValues); 
+            });
         },0);
         return this;
     };
 
-    var when = function(name) {
-        return {
-            propertyName: name,
-            fctToVerify: undefined,
-            do: undefined,
-            otherwise: undefined,
-            anyway: undefined,
-            process: function(newValue,oldValue) {
-                if(verifyWhen(this,newValue,oldValue)) {
-                    doWhen(this,newValue,oldValue);
-                } else {
-                    otherWiseWhen(this,newValue,oldValue);
-                }
-                anywayWhen(this,newValue,oldValue);
-            }
-        };
-    };
-
-    var conditions = function(w, actions) {
-        return {
-            verifies: function(fct2) {
-                w.fctToVerify = fct2;
-                return actions;
-            },
-            is: function(v) {
-                w.fctToVerify = function(value) {
-                    return value === v;
-                };
-                return actions;
-            },
-            isNot: function(v) {
-                w.fctToVerify = function(value) {
-                    return value !== v;
-                };
-                return actions;
-            },
-            isDefined: function() {
-                w.fctToVerify = function(value) {
-                    return value !== undefined;
-                };
-                return actions;
-            },
-            isUndefined: function() {
-                w.fctToVerify = function(value) {
-                    return value === undefined;
-                };
-                return actions;
-            },
-            becomes: function(v) {
-                w.fctToVerify = function(newValue,oldValue) {
-                    return v === newValue && newValue !== oldValue;
-                };
-                return actions;
-            },
-            remove: function() {
-                var idx = whens.indexOf(w);
-                if(idx >= 0) {
-                    whens.splice(idx,1);
-                }
-                return; // undefined because from now, this When is useless
-            }
-        };
-    };
-
-    var actions = function(name, w) {
-        var result = {
-            do: function(fct) {
-                w.do = fct;
-                return this;
-            },
-            otherwise: function(fct) {
-                w.otherwise = fct;
-                return this;
-            },
-            anyway: function(fct) {
-                w.anyway = fct;
-                return this;
-            },
-            and: function(name2) {
-                name2 = name2 || name;
-                var fctToVerify2;
-
-                var w2 = when(name2);
-                whens.push(w2);
-
-                var actions2 = actions(name2,w2);
-                actions2.do = function(fct) {
-                    w2.do = function(newValue,oldValue) {
-                        var value = that.getVariable(name);
-                        if(w.fctToVerify.call(null,value,value)) {
-                            fct.call(null,newValue,oldValue);
-                        }
-                    };
-                    return this;
-                };
-                w.do = function(newValue,oldValue) {
-                    var value = that.getVariable(name2);
-                    w2.process(value,value);
-                };
-                w.otherwise = w2.otherwise;
-                w.anyway = w2.anyway;
-
-                return conditions(w2,actions2);
-            }
-        };
-        return result;
+    this.remove = function(w) {
+        var idx = whens.indexOf(w);
+        if(idx >= 0) {
+            whens.splice(idx,1);
+        }
+        return this;
     };
 
     this.when = function(name) {
         if(!name) return;
-        
-        var w = when(name);
+
+        var w = new When(this, name);
 
         whens.push(w);
 
-        return conditions(w,actions(name,w));
-
+        return w.interface;
     };
+};
+
+var actions = function(when) {
+    return {
+        do: function(f) {
+            this.and = undefined;
+            when.do = f;
+            return this;
+        },
+        anyway: function(f) {
+            this.and = undefined;
+            when.anyway = f;
+            return this;
+        },
+        otherwise: function(f) {
+            this.and = undefined;
+            when.otherwise = f;
+            return this;
+        },
+        and: function(name) {
+            return when.onAnd(name);
+        }
+    };
+};
+
+var conditions = function(when, name, callback) {
+    return {
+        verifies: function(fct2) {
+            callback(fct2);
+            return actions(when);
+        },
+        is: function(v) {
+            callback(function(newValue,oldValue){
+                return newValue === v;
+            });
+            return actions(when);
+        },
+        isNot: function(v) {
+            callback(function(newValue,oldValue){
+                return newValue !== v;
+            });
+            return actions(when);
+        },
+        isDefined: function() {
+            callback(function(newValue,oldValue){
+                return newValue !== undefined;
+            });
+            return actions(when);
+        },
+        isUndefined: function() {
+            callback(function(newValue,oldValue){
+                return newValue === undefined;
+            });
+            return actions(when);
+        },
+        becomes: function(v) {
+            callback(function(newValue,oldValue){
+                return newValue === v && newValue !== oldValue;
+            });
+            return actions(when);
+        },
+    };
+};
+
+var When = function(sentence, name) {
+    var that = this;
+    var variables = [];
+
+    that.onVariable = function(n) {
+        if(variables.indexOf(n) === -1) {
+            variables.push(n);
+        }
+        return that;
+    }
+
+    var lastVariable = name;
+
+    that.onAnd = function(nameAnd) {
+        nameAnd = nameAnd || lastVariable;
+        lastVariable = nameAnd;
+        that.onVariable(nameAnd);
+        return conditions(
+            that, 
+            nameAnd, 
+            function(f) {
+                var oldToVerify = that.toVerify;
+                that.toVerify = function(newValues,oldValues) {
+                    return oldToVerify.call(null,newValues,oldValues) && f.call(null,newValues[nameAnd],oldValues[nameAnd]);
+                }
+            }
+        );
+    };
+
+    that.do = undefined;
+    that.otherwise = undefined;
+    that.anyway = undefined;
+
+    that.onVariable(name);
+
+    that.interface = conditions(
+        that, 
+        name, 
+        function(f) {
+            that.toVerify = function(newValues,oldValues) {
+                return f.call(null,newValues[name],oldValues[name]);
+            }
+        }
+    );
+
+    that.process = function(nameVariable, newValues,oldValues) {
+        if(variables.indexOf(nameVariable) === -1) return that;
+        if(that.toVerify.call(null, newValues, oldValues)) {
+            try {
+                that.do && that.do.call(null, newValues, oldValues);
+            } catch(e) {
+
+            }
+        } else {
+            try {
+                that.otherwise && that.otherwise.call(null, newValues, oldValues);
+            } 
+            catch(e) {
+
+            }
+        }
+        try {
+            that.anyway && that.anyway.call(null, newValues, oldValues);} 
+        catch(e) {
+
+        }
+        return that;
+    }
+
 };
