@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <script src="../../src/sentence.js"></script>
+        <script>
+            var mySentence = new Sentence();
+            
+            mySentence.when("z").is(0).do(function(){
+                alert("z 1");
+            }).otherwise(function(){
+                alert("zzzz");
+            });
+            
+            mySentence.when("z").is(0).do(function(){
+                alert("z 2");
+            });
+            
+            mySentence.when("x").is(0)
+            .and("y").is(1)
+            .do(function(){alert("x is 0 and y is 1");});
+            
+            mySentence.when("x").isNot(0)
+            .and().isNot(1)
+            .do(function(){alert("x is not 0 neither 1");});
+        </script>
+    </head>
+
+</html>
