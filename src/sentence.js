@@ -17,7 +17,11 @@ var Sentence = function() {
         setTimeout(function() {
             var newValues = privateVariables;
             whens.forEach(function(w) {
-                w.process(name, newValues, oldValues); 
+                try {
+                    w.process(name, newValues, oldValues);
+                } catch(e) {
+                    console.error("sentence.js: an error occured when processing a when")
+                }
             });
         },0);
         return this;
