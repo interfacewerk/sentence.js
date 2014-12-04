@@ -155,7 +155,7 @@ var When = function(sentence, name) {
 
     that.process = function(nameVariable, newValues,oldValues) {
         if(variables.indexOf(nameVariable) === -1) return that;
-        if(that.toVerify.call(null, newValues, oldValues)) {
+        if(that.toVerify && that.toVerify.call(null, newValues, oldValues)) {
             try {
                 that.do && that.do.call(null, newValues, oldValues);
             } catch(e) {
