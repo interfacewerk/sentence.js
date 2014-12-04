@@ -53,21 +53,29 @@ var actions = function(when) {
     return {
         do: function(f) {
             this.and = undefined;
+            this.during = undefined;
             when.do = f;
             return this;
         },
         anyway: function(f) {
             this.and = undefined;
+            this.during = undefined;
             when.anyway = f;
             return this;
         },
         otherwise: function(f) {
             this.and = undefined;
+            this.during = undefined;
             when.otherwise = f;
             return this;
         },
         and: function(name) {
             return when.onAnd(name);
+        },
+        during: function(duration) { // in milliseconds
+            this.and = undefined;
+            when.during = duration;
+            return this;
         }
     };
 };
@@ -156,26 +164,51 @@ var When = function(sentence, name) {
         }
     );
 
+    function doTheDo(nameVariable, newValues, oldValues) {
+        try {
+            that.do && that.do.call(null, newValues, oldValues);
+        } catch(e) {
+            console.error("sentence.js: error on do for " + nameVariable);
+        }
+    }
+
+    function doTheOtherwise(nameVariable, newValues, oldValues) {
+        that.otherwise && that.otherwise.call(null, newValues, oldValues);
+    }
+
+    that.during = undefined;
+    var verifiedTimeout;
     that.process = function(nameVariable, newValues,oldValues) {
         if(variables.indexOf(nameVariable) === -1) return that;
         if(that.toVerify && that.toVerify.call(null, newValues, oldValues)) {
-            try {
-                that.do && that.do.call(null, newValues, oldValues);
-            } catch(e) {
-
+            if(that.during !== undefined) {
+                if(!verifiedTimeout) {
+                    verifiedTimeout = setTimeout(function() {
+                        verifiedTimeout = undefined;
+                        doTheDo(); // we don't provide the values in this case!
+                    } ,that.during);
+                }
+            } else {
+                doTheDo(nameVariable, newValues, oldValues);
             }
         } else {
             try {
-                that.otherwise && that.otherwise.call(null, newValues, oldValues);
+                if(that.during !== undefined) {
+                    if(verifiedTimeout) {
+                        clearTimeout(verifiedTimeout);
+                        verifiedTimeout = undefined;
+                    }
+                }
+                doTheOtherwise();
             } 
             catch(e) {
-
+                console.error("sentence.js: error on otherwise for " + nameVariable);
             }
         }
         try {
             that.anyway && that.anyway.call(null, newValues, oldValues);} 
         catch(e) {
-
+            console.error("sentence.js: error on anyway for " + nameVariable);
         }
         return that;
     }
