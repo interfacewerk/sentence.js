@@ -28,10 +28,13 @@ var Sentence = function() {
     };
 
     this.remove = function(w) {
-        var idx = whens.indexOf(w);
-        if(idx >= 0) {
-            whens.splice(idx,1);
-        }
+        whens.some(function(_w,idx) {
+            if(_w.interface === w) {
+                whens.splice(idx,1);
+                return true;
+            }
+            return false;
+        });
         return this;
     };
 
