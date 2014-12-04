@@ -53,28 +53,28 @@ var actions = function(when) {
     return {
         do: function(f) {
             this.and = undefined;
-            this.during = undefined;
+            this.after = undefined;
             when.do = f;
             return this;
         },
         anyway: function(f) {
             this.and = undefined;
-            this.during = undefined;
+            this.after = undefined;
             when.anyway = f;
             return this;
         },
         otherwise: function(f) {
             this.and = undefined;
-            this.during = undefined;
+            this.after = undefined;
             when.otherwise = f;
             return this;
         },
         and: function(name) {
             return when.onAnd(name);
         },
-        during: function(duration) { // in milliseconds
+        after: function(duration) { // in milliseconds
             this.and = undefined;
-            when.during = duration;
+            when.after = duration;
             return this;
         }
     };
@@ -176,24 +176,24 @@ var When = function(sentence, name) {
         that.otherwise && that.otherwise.call(null, newValues, oldValues);
     }
 
-    that.during = undefined;
+    that.after = undefined;
     var verifiedTimeout;
     that.process = function(nameVariable, newValues,oldValues) {
         if(variables.indexOf(nameVariable) === -1) return that;
         if(that.toVerify && that.toVerify.call(null, newValues, oldValues)) {
-            if(that.during !== undefined) {
+            if(that.after !== undefined) {
                 if(!verifiedTimeout) {
                     verifiedTimeout = setTimeout(function() {
                         verifiedTimeout = undefined;
                         doTheDo(); // we don't provide the values in this case!
-                    } ,that.during);
+                    } ,that.after);
                 }
             } else {
                 doTheDo(nameVariable, newValues, oldValues);
             }
         } else {
             try {
-                if(that.during !== undefined) {
+                if(that.after !== undefined) {
                     if(verifiedTimeout) {
                         clearTimeout(verifiedTimeout);
                         verifiedTimeout = undefined;
