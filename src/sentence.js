@@ -53,28 +53,32 @@ var actions = function(when) {
     return {
         do: function(f) {
             this.and = undefined;
-            this.after = undefined;
+            this.for = undefined;
             when.do = f;
             return this;
         },
         anyway: function(f) {
             this.and = undefined;
-            this.after = undefined;
+            this.for = undefined;
             when.anyway = f;
             return this;
         },
         otherwise: function(f) {
             this.and = undefined;
-            this.after = undefined;
+            this.for = undefined;
             when.otherwise = f;
             return this;
         },
         and: function(name) {
             return when.onAnd(name);
         },
-        after: function(duration) { // in milliseconds
+        // the 'do' will be executed
+        // if conditions are met for 'duration' milliseconds 
+        // NB: a timeout is set the first time conditions are met
+        // and cleared when the are not anymore
+        for: function(duration) { // in milliseconds
             this.and = undefined;
-            when.after = duration;
+            when.for = duration;
             return this;
         }
     };
@@ -176,24 +180,24 @@ var When = function(sentence, name) {
         that.otherwise && that.otherwise.call(null, newValues, oldValues);
     }
 
-    that.after = undefined;
+    that.for = undefined;
     var verifiedTimeout;
     that.process = function(nameVariable, newValues,oldValues) {
         if(variables.indexOf(nameVariable) === -1) return that;
         if(that.toVerify && that.toVerify.call(null, newValues, oldValues)) {
-            if(that.after !== undefined) {
+            if(that.for !== undefined) {
                 if(!verifiedTimeout) {
                     verifiedTimeout = setTimeout(function() {
                         verifiedTimeout = undefined;
                         doTheDo(); // we don't provide the values in this case!
-                    } ,that.after);
+                    } ,that.for);
                 }
             } else {
                 doTheDo(nameVariable, newValues, oldValues);
             }
         } else {
             try {
-                if(that.after !== undefined) {
+                if(that.for !== undefined) {
                     if(verifiedTimeout) {
                         clearTimeout(verifiedTimeout);
                         verifiedTimeout = undefined;
