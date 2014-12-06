@@ -43,8 +43,16 @@ var conditions = function(when, names, callback) {
         };
     } else {
         return {
-            verify: function(fct) {
-                callback(fct);
+            verify: function(f) {
+                callback(function(newValues,oldValues){
+                    var newArgs = [];
+                    var oldArgs = [];
+                    names.forEach(function(name) {
+                        newArgs.push(newValues[name]);
+                        oldArgs.push(oldValues[name]);
+                    });
+                    return f.apply(null, newArgs.concat(oldArgs));
+                });
                 return actions(when);
             }
         }
