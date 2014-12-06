@@ -7,24 +7,46 @@ var Sentence = function() {
 
     var whens = [];
 
-    that.get = function(name) {
-        return privateVariables[name];    
+    that.get = function(/*name,name,name,...*/) {
+        if(arguments.length === 0) {
+            return privateVariables;
+        }
+        if(arguments.length === 1) {
+            return privateVariables[arguments[0]];    
+        }
+        var result = {};
+        for(var i=0;i<arguments.length;i++) {
+            result[arguments[i]] = privateVariables[arguments[i]];
+        }
+        return result;
     };
 
-    this.set = function(name, value) {
+    that.set = function(/*name,value,name,value ... OR {name:value,name:value,...}*/) {
         var oldValues = JSON.parse(JSON.stringify(privateVariables));
-        privateVariables[name] = value;
+        var names = [];
+        if(arguments.length === 1) {
+            var arg1 = arguments[0];
+            for(var name in arg1) {
+                privateVariables[name] = arg1[name];
+                names.push(name);
+            }
+        } else {
+            for(var i=0;i<arguments.length/2;i++) {
+                privateVariables[arguments[2*i]] = arguments[2*i + 1];
+                names.push(arguments[2*i]);
+            }
+        }
         setTimeout(function() {
             var newValues = privateVariables;
             whens.forEach(function(w) {
                 try {
-                    w.process(name, newValues, oldValues);
+                    w.process(names, newValues, oldValues);
                 } catch(e) {
-                    console.error("sentence.js: an error occured when processing a when")
+                    console.error("sentence.js: an error occured when processing a when");
                 }
             });
-        },0);
-        return this;
+        }, 0);
+        return that;
     };
 
     this.remove = function(w) {
@@ -38,10 +60,15 @@ var Sentence = function() {
         return this;
     };
 
-    this.when = function(name) {
-        if(!name) return;
+    this.when = function(/*name1,name2,name3,...*/) {
 
-        var w = new When(this, name);
+        var names = [];
+
+        for(var i = 0; i<arguments.length;i++) {
+            names.push(arguments[i]);
+        }
+
+        var w = new When(this, names);
 
         whens.push(w);
 
@@ -69,8 +96,12 @@ var actions = function(when) {
             when.otherwise = f;
             return this;
         },
-        and: function(name) {
-            return when.onAnd(name);
+        and: function() {
+            var names = [];
+            for(var i=0; i < arguments.length; i++) {
+                names.push(arguments[i]);
+            }
+            return when.onAnd(names);
         },
         // the 'do' will be executed
         // if conditions are met for 'duration' milliseconds 
@@ -84,46 +115,57 @@ var actions = function(when) {
     };
 };
 
-var conditions = function(when, name, callback) {
-    return {
-        verifies: function(fct2) {
-            callback(fct2);
-            return actions(when);
-        },
-        is: function(v) {
-            callback(function(newValue,oldValue){
-                return newValue === v;
-            });
-            return actions(when);
-        },
-        isNot: function(v) {
-            callback(function(newValue,oldValue){
-                return newValue !== v;
-            });
-            return actions(when);
-        },
-        isDefined: function() {
-            callback(function(newValue,oldValue){
-                return newValue !== undefined;
-            });
-            return actions(when);
-        },
-        isUndefined: function() {
-            callback(function(newValue,oldValue){
-                return newValue === undefined;
-            });
-            return actions(when);
-        },
-        becomes: function(v) {
-            callback(function(newValue,oldValue){
-                return newValue === v && newValue !== oldValue;
-            });
-            return actions(when);
-        },
-    };
+var conditions = function(when, names, callback) {
+    if(names.length === 1) {
+        var name = names[0];
+        return {
+            verifies: function(fct2) {
+                callback(fct2);
+                return actions(when);
+            },
+            is: function(v) {
+                callback(function(newValues,oldValues){
+                    return newValues[name] === v;
+                });
+                return actions(when);
+            },
+            isNot: function(v) {
+                callback(function(newValues,oldValues){
+                    return newValues[name] !== v;
+                });
+                return actions(when);
+            },
+            isDefined: function() {
+                callback(function(newValues,oldValues){
+                    return newValues[name] !== undefined;
+                });
+                return actions(when);
+            },
+            isUndefined: function() {
+                callback(function(newValues,oldValues){
+                    return newValues[name] === undefined;
+                });
+                return actions(when);
+            },
+            becomes: function(v) {
+                callback(function(newValues,oldValues){
+                    return newValues[name] === v && newValues[name] !== oldValues[name];
+                });
+                return actions(when);
+            }
+        };
+    } else {
+        return {
+            verify: function(fct) {
+                callback(fct);
+                return actions(when);
+            }
+        }
+    }
+
 };
 
-var When = function(sentence, name) {
+var When = function(sentence, names) {
     var that = this;
     var variables = [];
 
@@ -134,19 +176,34 @@ var When = function(sentence, name) {
         return that;
     }
 
-    var lastVariable = name;
+    var lastVariables = names;
 
-    that.onAnd = function(nameAnd) {
-        nameAnd = nameAnd || lastVariable;
-        lastVariable = nameAnd;
-        that.onVariable(nameAnd);
+    that.onAnd = function(namesAnd) {
+        namesAnd = namesAnd || lastVariables;
+        lastVariables = namesAnd;
+        namesAnd.forEach(function(name){
+            that.onVariable(name);
+        });
         return conditions(
             that, 
-            nameAnd, 
+            namesAnd, 
             function(f) {
                 var oldToVerify = that.toVerify;
                 that.toVerify = function(newValues,oldValues) {
-                    return oldToVerify.call(null,newValues,oldValues) && f.call(null,newValues[nameAnd],oldValues[nameAnd]);
+                    function verifyF() {
+                        if(namesAnd.length === 1) {
+                            return f.call(null, newValues, oldValues);
+                        } else {
+                            var filteredNew = {};
+                            var filteredOld = {};
+                            namesAnd.forEach(function(name){
+                                filteredNew[name] = newValues[name];
+                                filteredOld[name] = oldValues[name]; 
+                            });
+                            return f.call(null, filteredNew, filteredOld);
+                        }
+                    }
+                    return oldToVerify.call(null, newValues, oldValues) && verifyF();
                 }
             }
         );
@@ -156,34 +213,35 @@ var When = function(sentence, name) {
     that.otherwise = undefined;
     that.anyway = undefined;
 
-    that.onVariable(name);
+    names.forEach(function(name){
+        that.onVariable(name);
+    });
 
     that.interface = conditions(
         that, 
-        name, 
+        names, 
         function(f) {
             that.toVerify = function(newValues,oldValues) {
-                return f.call(null,newValues[name],oldValues[name]);
+                return f.call(null,newValues,oldValues);
             }
         }
     );
 
-    function doTheDo(nameVariable, newValues, oldValues) {
+    function doTheDo(nameVariables, newValues, oldValues) {
         try {
             that.do && that.do.call(null, newValues, oldValues);
         } catch(e) {
-            console.error("sentence.js: error on do for " + nameVariable);
+            console.error("sentence.js: error on do for " + nameVariables);
         }
-    }
-
-    function doTheOtherwise(nameVariable, newValues, oldValues) {
-        that.otherwise && that.otherwise.call(null, newValues, oldValues);
     }
 
     that.for = undefined;
     var verifiedTimeout;
-    that.process = function(nameVariable, newValues,oldValues) {
-        if(variables.indexOf(nameVariable) === -1) return that;
+    that.process = function(nameVariables, newValues,oldValues) {
+        if(!variables.some(function(variable){
+            return nameVariables.indexOf(variable) !== -1; })) {
+            return that;
+        }
         if(that.toVerify && that.toVerify.call(null, newValues, oldValues)) {
             if(that.for !== undefined) {
                 if(!verifiedTimeout) {
@@ -193,7 +251,7 @@ var When = function(sentence, name) {
                     } ,that.for);
                 }
             } else {
-                doTheDo(nameVariable, newValues, oldValues);
+                doTheDo(nameVariables, newValues, oldValues);
             }
         } else {
             try {
@@ -203,18 +261,17 @@ var When = function(sentence, name) {
                         verifiedTimeout = undefined;
                     }
                 }
-                doTheOtherwise();
+                that.otherwise && that.otherwise.call(null, newValues, oldValues);
             } 
             catch(e) {
-                console.error("sentence.js: error on otherwise for " + nameVariable);
+                console.error("sentence.js: error on otherwise for " + nameVariables);
             }
         }
         try {
             that.anyway && that.anyway.call(null, newValues, oldValues);} 
         catch(e) {
-            console.error("sentence.js: error on anyway for " + nameVariable);
+            console.error("sentence.js: error on anyway for " + nameVariables);
         }
         return that;
     }
-
 };
