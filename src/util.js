@@ -5,13 +5,13 @@ String.prototype.milliseconds = function() {
 }
 
 String.prototype.seconds = function() {
-	return Number(this)*1000;
+	return Number(this)*1e3;
 }
 
 String.prototype.minutes = function() {
-	return Number(this)*60000;
+	return Number(this)*6e4;
 }
 
 String.prototype.hours = function() {
-	return Number(this)*3600000;
+	return Number(this)*36e5;
 }
