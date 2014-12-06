@@ -179,7 +179,7 @@ var When = function(sentence, names) {
     var lastVariables = names;
 
     that.onAnd = function(namesAnd) {
-        namesAnd = namesAnd || lastVariables;
+        namesAnd = namesAnd.length === 0 ? lastVariables : namesAnd;
         lastVariables = namesAnd;
         namesAnd.forEach(function(name){
             that.onVariable(name);
