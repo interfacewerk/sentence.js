@@ -1,0 +1,8 @@
+{
+	"project": "src",
+	"inputs": ["sentence.js", "when.js", "actions.js", "conditions.js", "time.js"],
+	"output": "sentence.min.js",
+	"generateMap": true,
+	"mangle": true,
+	"isolate": false
+}
