@@ -15,3 +15,11 @@ String.prototype.minutes = function() {
 String.prototype.hours = function() {
 	return Number(this)*36e5;
 }
+
+String.prototype.days = function() {
+	return Number(this)*864e5;
+}
+
+String.prototype.weeks = function() {
+	return Number(this)*6048e5;
+}
