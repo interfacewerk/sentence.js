@@ -2,16 +2,17 @@
 
 <html>
     <head>
-        
+
         <script src="../../src/sentence.js"></script>
         <script src="../../src/when.js"></script>
         <script src="../../src/actions.js"></script>
         <script src="../../src/conditions.js"></script>
         <script src="../../src/time.js"></script>
-        
+        <script src="../../src/that.js"></script>
+
         <script>
             var mySentence = new Sentence();
-            
+
             mySentence.when("z").is(0)
             .do(function(){
                 alert("z 1");
@@ -19,7 +20,7 @@
             .otherwise(function(){
                 alert("zzzz");
             });
-            
+
             mySentence.when("z").is(10)
             .and("x","y")
             .verify(function(x,y){
@@ -31,16 +32,16 @@
             .otherwise(function(){
                 console.log("hiha");
             })
-            
+
             mySentence.when("z").is(0)
             .do(function(){
                 alert("z 2");
             });
-            
+
             mySentence.when("x").is(0)
             .and("y").is(1)
             .do(function(){alert("x is 0 and y is 1");});
-            
+
             mySentence.when("x").isNot(0)
             .and().isNot(1)
             .do(function(){alert("x is not 0 neither 1");});
@@ -50,6 +51,18 @@
             })
             .for("5".seconds())
             .do(function(){console.log("x 1000 for 5 seconds!");});
+
+            var thatSum = mySentence
+            .says().that("sumXY")
+            .is("x", "y", function(x,y,oldX,oldY) {
+                return x + oldX + y + oldY;
+            });
+
+            mySentence
+            .when("sumXY").isDefined()
+            .do(function(scope){
+                console.log(scope.truc);
+            });
         </script>
     </head>
 

@@ -8,7 +8,7 @@ Sentence.js is a library which aims at helping you writing understandable and ma
 Whereever and whenever, you have state-machines and many variables and you want to execute functions according to your variables values.
 
 ## How?
-With sentence.js, you define a scope for variables, called a ```Sentence```. Each ```sentence``` has a scope of variables. A ```Sentence``` can be seen as a state machine. You can define functions to execute when some conditions are fulfilled by the scope of variables.
+With sentence.js, you define a scope for variables, called a ```Sentence```. Each ```sentence``` has its own scope of variables. A ```Sentence``` can be seen as a state machine. You can define functions to execute when some conditions are fulfilled by the scope of variables.
 
 ## In practice
 Let's consider a simple example. You have a variable ```x``` and if it takes the value ```200```, you want to execute a function ```something```.
@@ -193,3 +193,35 @@ Similarly, you can use:
 * `"10".hours()`
 * `"10".days()`
 * `"10".weeks()`
+
+### `says().that(...).is(...)` : how to write a statement
+
+Imagine that you have three variables, `x`, `y` and `sumXY`. Imagine that every time you change `x` or `y`, you want to change `sumXY` to be `x+y`. With sentence.js, you simply write:
+
+```
+mySentence.says()
+.that("sumXY")
+.is("x", "y", function(x,y) {
+    return x+y;
+});
+```
+
+The variables `x`, `y` and `sumXY` are created in the scope of `mySentence` if necessary. Every time `x` or `y` is changed, the function passed as last argument in `is` is evaluated and the returned value assigned to `sumXY`. The function passed as last argument receives the same arguments as a condition function would.
+
+```
+mySentence.says()
+.that("sumXY")
+.is("x", "y", function(x,y,oldX,oldY) {
+    return ...
+});
+```
+
+To remove a statement, you simply write:
+
+```
+var myStatement = mySentence.says()
+.that(...)
+.is(...);
+
+myStatement.remove();
+```

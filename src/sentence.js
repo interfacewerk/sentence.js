@@ -61,13 +61,19 @@ var Sentence = function() {
     };
 
     that.when = function(/*name1,name2,name3,...*/) {
-
         var names = Array.prototype.slice.call(arguments);
-
         var w = new When(that, names);
-
         whens.push(w);
-
         return w.interface;
     };
+
+    that.says = function() {
+        return {
+            that : function(name) {
+                var aThat = new That(that, name);
+                return aThat;
+            }
+        };
+    };
+    
 };
