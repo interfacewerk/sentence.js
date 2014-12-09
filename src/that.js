@@ -3,9 +3,9 @@
 function That(sentence, name) {
     var that = this;
     var theWhen;
-    
+
     var fIs;
-    
+
     function onVerify() {
         sentence.set(
             name, 
@@ -19,11 +19,16 @@ function That(sentence, name) {
         fIs = arguments[arguments.length-1];
 
         theWhen = (sentence.when.apply(sentence, names));
-        theWhen.verify(onVerify);
-        
+
+        if(theWhen.verify){
+            theWhen.verify(onVerify);
+        } else {
+            theWhen.verifies(onVerify);
+        }
+
         return that;
     }
-    
+
     that.remove = function() {
         sentence.remove(theWhen);
         return that;
