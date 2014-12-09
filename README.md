@@ -194,12 +194,12 @@ Similarly, you can use:
 * `"10".days()`
 * `"10".weeks()`
 
-### `says().that(...).is(...)` : how to write a statement
+### `says.that(...).is(...)` : how to write a statement
 
 Imagine that you have three variables, `x`, `y` and `sumXY`. Imagine that every time you change `x` or `y`, you want to change `sumXY` to be `x+y`. With sentence.js, you simply write:
 
 ```
-mySentence.says()
+mySentence.says
 .that("sumXY")
 .is("x", "y", function(x,y) {
     return x+y;
@@ -209,7 +209,7 @@ mySentence.says()
 The variables `x`, `y` and `sumXY` are created in the scope of `mySentence` if necessary. Every time `x` or `y` is changed, the function passed as last argument in `is` is evaluated and the returned value assigned to `sumXY`. The function passed as last argument receives the same arguments as a condition function would.
 
 ```
-mySentence.says()
+mySentence.says
 .that("sumXY")
 .is("x", "y", function(x,y,oldX,oldY) {
     return ...
@@ -219,7 +219,7 @@ mySentence.says()
 To remove a statement, you simply write:
 
 ```
-var myStatement = mySentence.says()
+var myStatement = mySentence.says
 .that(...)
 .is(...);
 

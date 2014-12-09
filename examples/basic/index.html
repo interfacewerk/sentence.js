@@ -53,7 +53,7 @@
             .do(function(){console.log("x 1000 for 5 seconds!");});
 
             var thatSum = mySentence
-            .says().that("sumXY")
+            .says.that("sumXY")
             .is("x", "y", function(x,y,oldX,oldY) {
                 return x + oldX + y + oldY;
             });

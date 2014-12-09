@@ -67,13 +67,11 @@ var Sentence = function() {
         return w.interface;
     };
 
-    that.says = function() {
-        return {
-            that : function(name) {
-                var aThat = new That(that, name);
-                return aThat;
-            }
-        };
+    that.says = {
+        that : function(name) {
+            var aThat = new That(that, name);
+            return aThat;
+        }
     };
-    
+
 };
