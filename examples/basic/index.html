@@ -13,7 +13,13 @@
 
         <script>
             var mySentence = new Sentence();
-
+            
+            mySentence.set = function() {
+                Sentence.prototype.set.apply(this, arguments);
+                console.log("set of mySentence");
+                return this;
+            }
+            
             mySentence.when("z").is(0)
             .do(function(){
                 alert("z 1");

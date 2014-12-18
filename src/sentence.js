@@ -7,7 +7,7 @@ var Sentence = function() {
 
     var whens = [];
 
-    that.get = function(/*name,name,name,...*/) {
+    that._get = function(/*name,name,name,...*/) {
         if(arguments.length === 0) {
             return privateVariables;
         }
@@ -21,7 +21,7 @@ var Sentence = function() {
         return result;
     };
 
-    that.set = function(/*name,value,name,value ... OR {name:value,name:value,...}*/) {
+    that._set = function(/*name,value,name,value ... OR {name:value,name:value,...}*/) {
         var oldValues = JSON.parse(JSON.stringify(privateVariables));
         var names = [];
         if(arguments.length === 1) {
@@ -49,7 +49,7 @@ var Sentence = function() {
         return that;
     };
 
-    that.remove = function(w) {
+    that._remove = function(w) {
         whens.some(function(_w,idx) {
             if(_w.interface === w) {
                 whens.splice(idx,1);
@@ -60,7 +60,7 @@ var Sentence = function() {
         return that;
     };
 
-    that.when = function(/*name1,name2,name3,...*/) {
+    that._when = function(/*name1,name2,name3,...*/) {
         var names = Array.prototype.slice.call(arguments);
         var w = new When(that, names);
         whens.push(w);
@@ -75,3 +75,19 @@ var Sentence = function() {
     };
 
 };
+
+Sentence.prototype.get = function() {
+    return this._get.apply(this, arguments);
+}
+
+Sentence.prototype.set = function() {
+    return this._set.apply(this, arguments);
+}
+
+Sentence.prototype.remove = function() {
+    return this._remove.apply(this, arguments);
+}
+
+Sentence.prototype.when = function() {
+    return this._when.apply(this, arguments);
+}
