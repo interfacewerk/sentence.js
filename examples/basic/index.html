@@ -13,13 +13,13 @@
 
         <script>
             var mySentence = new Sentence();
-            
+
             mySentence.set = function() {
                 Sentence.prototype.set.apply(this, arguments);
                 console.log("set of mySentence");
                 return this;
             }
-            
+
             mySentence.when("z").is(0)
             .do(function(){
                 alert("z 1");
@@ -70,6 +70,14 @@
             .do(function(scope){
                 console.log(scope.truc);
             });
+
+            mySentence.set("oneVariable",1);
+            var myWhen = mySentence.when("oneVariable");
+            setTimeout(function(){
+                myWhen.is(1).do(function(){alert("oneVariable");});
+                mySentence.process(myWhen);
+            }, 1000);
+
         </script>
     </head>
 
