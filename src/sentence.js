@@ -67,6 +67,23 @@ var Sentence = function() {
         return w.interface;
     };
 
+    that._process = function(w) {
+        whens.some(function(_w,idx) {
+            if(_w.interface === w) {
+                setTimeout(function(){
+                    var names = [];
+                    for(var key in privateVariables) {
+                        names.push(key);
+                    }
+                    _w.process(names, privateVariables, privateVariables);
+                }, 0);
+                return true;
+            }
+            return false;
+        });
+        return that;
+    };
+
     that.says = {
         that : function(name) {
             var aThat = new That(that, name);
@@ -84,10 +101,14 @@ Sentence.prototype.set = function() {
     return this._set.apply(this, arguments);
 }
 
-Sentence.prototype.remove = function() {
-    return this._remove.apply(this, arguments);
+Sentence.prototype.remove = function(w) {
+    return this._remove.call(this, w);
 }
 
 Sentence.prototype.when = function() {
     return this._when.apply(this, arguments);
+}
+
+Sentence.prototype.process = function(w) {
+    return this._process.call(this, w);
 }
