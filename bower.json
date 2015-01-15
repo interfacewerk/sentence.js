@@ -1,0 +1,25 @@
+{
+  "name": "sentence.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/interfacewerk/event-manager",
+  "authors": [
+    "interfacewerk"
+  ],
+  "main": "src/sentence.min.js",
+  "description": "Sentence.js is a library which aims at helping you writing understandable and maintainable code.",
+  "keywords": [
+    "sentence",
+    "structure",
+    "structured-code"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  }
+}
