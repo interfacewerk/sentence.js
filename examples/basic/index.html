@@ -15,26 +15,6 @@
 
             mySentence.when("z").is(0)
             .do(function(){
-                alert("z 1");
-            })
-            .otherwise(function(){
-                alert("zzzz");
-            });
-
-            mySentence.when("z").is(10)
-            .and("x","y")
-            .verify(function(x,y){
-                return x === y;
-            })
-            .do(function(newV, oldV){
-                console.log("z 10 and x === y");
-            })
-            .otherwise(function(){
-                console.log("hiha");
-            })
-
-            mySentence.when("z").is(0)
-            .do(function(){
                 alert("z 2");
             });
 
@@ -63,13 +43,7 @@
             .do(function(scope){
                 console.log(scope.sumXY);
             });
-
-            mySentence.set("oneVariable",1);
-            var myWhen = mySentence.when("oneVariable");
-            setTimeout(function(){
-                myWhen.is(1).do(function(){alert("oneVariable");});
-                mySentence.process(myWhen);
-            }, 1000);
+			
 
         </script>
     </head>
