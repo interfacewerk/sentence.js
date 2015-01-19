@@ -33,7 +33,10 @@ var actions = function(when) {
             that.and = undefined;
             when.for = duration;
             return that;
-        }
+        },
+		remove: function() {
+			when.remove();
+		}
     };
     return that;
 };
