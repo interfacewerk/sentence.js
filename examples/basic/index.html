@@ -20,17 +20,15 @@
                 return this;
             }
 
-//            mySentence.when("z").is(0)
-//            .do(function(){
-//                alert("z 1");
-//            })
-//            .otherwise(function(){
-//                alert("zzzz");
-//            });
+            mySentence.when("z").is(0)
+            .do(function(){
+                alert("z 1");
+            })
+            .otherwise(function(){
+                alert("zzzz");
+            });
 
-            var zWhen = mySentence.when("z");
-			
-			zWhen.is(10)
+            mySentence.when("z").is(10)
             .and("x","y")
             .verify(function(x,y){
                 return x === y;
@@ -42,45 +40,43 @@
                 console.log("hiha");
             });
 			
-			zWhen.remove();
+            mySentence.when("z").is(0)
+            .do(function(){
+                alert("z 2");
+            });
 
-//            mySentence.when("z").is(0)
-//            .do(function(){
-//                alert("z 2");
-//            });
-//
-//            mySentence.when("x").is(0)
-//            .and("y").is(1)
-//            .do(function(){alert("x is 0 and y is 1");});
-//
-//            mySentence.when("x").isNot(0)
-//            .and().isNot(1)
-//            .do(function(){alert("x is not 0 neither 1");});
-//
-//            mySentence.when("x").verifies(function(x){
-//                return x>=1000;
-//            })
-//            .for("5".seconds())
-//            .do(function(){console.log("x 1000 for 5 seconds!");});
-//
-//            var thatSum = mySentence
-//            .says.that("sumXY")
-//            .is("x", "y", function(x,y,oldX,oldY) {
-//                return x + oldX + y + oldY;
-//            });
-//
-//            mySentence
-//            .when("sumXY").isDefined()
-//            .do(function(scope){
-//                console.log(scope.truc);
-//            });
-//
-//            mySentence.set("oneVariable",1);
-//            var myWhen = mySentence.when("oneVariable");
-//            setTimeout(function(){
-//                myWhen.is(1).do(function(){alert("oneVariable");});
-//                mySentence.process(myWhen);
-//            }, 1000);
+            mySentence.when("x").is(0)
+            .and("y").is(1)
+            .do(function(){alert("x is 0 and y is 1");});
+
+            mySentence.when("x").isNot(0)
+            .and().isNot(1)
+            .do(function(){alert("x is not 0 neither 1");});
+
+            mySentence.when("x").verifies(function(x){
+                return x>=1000;
+            })
+            .for("5".seconds())
+            .do(function(){console.log("x 1000 for 5 seconds!");});
+
+            var thatSum = mySentence
+            .says.that("sumXY")
+            .is("x", "y", function(x,y,oldX,oldY) {
+                return x + oldX + y + oldY;
+            });
+
+            mySentence
+            .when("sumXY").isDefined()
+            .do(function(scope){
+                console.log(scope.truc);
+            });
+
+            mySentence.set("oneVariable",1);
+            var myWhen = mySentence.when("oneVariable");
+            setTimeout(function(){
+                myWhen.is(1).do(function(){alert("oneVariable");});
+                mySentence.process(myWhen);
+            }, 1000);
 
         </script>
     </head>
