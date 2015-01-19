@@ -4,6 +4,9 @@ var conditions = function(when, names, callback) {
     if(names.length === 1) {
         var name = names[0];
         return {
+			remove: function () {
+				when.remove();
+			},
             verifies: function(f) {
                 callback(function(newValues,oldValues){
                     return f(newValues[name],oldValues[name]);
@@ -43,6 +46,9 @@ var conditions = function(when, names, callback) {
         };
     } else {
         return {
+			remove: function () {
+				when.remove();
+			},
             verify: function(f) {
                 callback(function(newValues,oldValues){
                     var newArgs = [];

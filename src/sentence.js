@@ -51,7 +51,7 @@ var Sentence = function() {
 
     that._remove = function(w) {
         whens.some(function(_w,idx) {
-            if(_w.interface === w) {
+            if(_w === w) {
                 whens.splice(idx,1);
                 return true;
             }
@@ -99,10 +99,6 @@ Sentence.prototype.get = function() {
 
 Sentence.prototype.set = function() {
     return this._set.apply(this, arguments);
-}
-
-Sentence.prototype.remove = function(w) {
-    return this._remove.call(this, w);
 }
 
 Sentence.prototype.when = function() {

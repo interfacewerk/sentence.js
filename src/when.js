@@ -3,7 +3,11 @@
 var When = function(sentence, names) {
     var that = this;
     var variables = [];
-
+	
+	that.remove = function () {
+		sentence._remove(that);
+	};
+	
     that.onVariable = function(n) {
         if(variables.indexOf(n) === -1) {
             variables.push(n);
@@ -19,7 +23,7 @@ var When = function(sentence, names) {
         namesAnd.forEach(function(name){
             that.onVariable(name);
         });
-        return conditions(
+		return conditions(
             that, 
             namesAnd, 
             function(f) {
