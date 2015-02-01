@@ -12,7 +12,13 @@
                 console.log("set of mySentence");
                 return this;
             }
-
+			mySentence.set("z", true);
+			setTimeout(function(){
+				mySentence.when("z").becomes(true).do(function(){alert();})
+			.processWithOldValues({z: undefined});
+			},1000);
+			
+			
             mySentence.when("z").is(0)
             .do(function(){
                 alert("z 2");
