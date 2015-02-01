@@ -8,6 +8,10 @@ var When = function(sentence, names) {
 		sentence._remove(that);
 	};
 	
+	that.processWithOldValues = function (oldValues) {
+		that.interface.processWithOldValues(oldValues);
+	}
+	
     that.onVariable = function(n) {
         if(variables.indexOf(n) === -1) {
             variables.push(n);

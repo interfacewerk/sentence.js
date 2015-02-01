@@ -36,6 +36,10 @@ var actions = function(when) {
         },
 		remove: function() {
 			when.remove();
+		},
+		processWithOldValues: function() {
+			when.processWithOldValues.apply(this, arguments);
+			return this;
 		}
     };
     return that;
