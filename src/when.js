@@ -66,6 +66,17 @@ var When = function(sentence, names) {
         }
     );
 
+	that.interface.processWithOldValues = function (oldValues) {
+		var newValues = {};
+		var nameVariables = [];
+		for(var key in oldValues) {
+			nameVariables.push(key);
+			newValues[key] = sentence.get(key);
+		}
+		that.process(nameVariables, newValues, oldValues);
+		return that.interface;
+	};
+	
     function doTheDo(nameVariables, newValues, oldValues) {
         try {
             that.do && that.do.call(null, newValues, oldValues);
