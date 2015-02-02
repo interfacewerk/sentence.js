@@ -37,7 +37,7 @@ var Sentence = function() {
             }
         }
         setTimeout(function() {
-            var newValues = privateVariables;
+            var newValues = JSON.parse(JSON.stringify(privateVariables));
             whens.forEach(function(w) {
                 try {
                     w.process(names, newValues, oldValues);
