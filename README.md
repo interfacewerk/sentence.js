@@ -88,7 +88,7 @@ The result of `mySentence.when(...).verify(...)` is an object with 5 methods:
 
 * `for` enables you to wait before executing the `do` if the conditions are fulfilled. It will also be described in more details after.
 
-Basically, everytime a variable changes in the sentence, the following process is executed:
+Basically, everytime a variable updates or rather set() is called upon in the sentence, the following process is executed:
 
 0. `mySentence.set("x",1,"y",2);`
 1. for each **concerned** `when` in the sentence
