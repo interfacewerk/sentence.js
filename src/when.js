@@ -87,7 +87,7 @@ var When = function(sentence, names) {
 		try {
 			that.do && that.do.call(null, newValues, oldValues);
 		} catch(e) {
-			console.error("sentence.js: error on do for " + nameVariables);
+			console.error("sentence.js: error on do for '" + nameVariables + "' " + e);
 		}
 	}
 
@@ -120,13 +120,13 @@ var When = function(sentence, names) {
 				that.otherwise && that.otherwise.call(null, newValues, oldValues);
 			} 
 			catch(e) {
-				console.error("sentence.js: error on otherwise for " + nameVariables);
+				console.error("sentence.js: error on otherwise for '" + nameVariables + "' " + e);
 			}
 		}
 		try {
 			that.anyway && that.anyway.call(null, newValues, oldValues);} 
 		catch(e) {
-			console.error("sentence.js: error on anyway for " + nameVariables);
+			console.error("sentence.js: error on anyway for '" + nameVariables + "' " + e);
 		}
 		return that;
 	}

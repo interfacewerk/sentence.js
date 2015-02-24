@@ -42,7 +42,7 @@ var Sentence = function() {
                 try {
                     w.process(names, newValues, oldValues);
                 } catch(e) {
-                    console.error("sentence.js: an error occured when processing a when");
+                    console.error("sentence.js: an error occured when processing a when" + e);
                 }
             });
         }, 0);
